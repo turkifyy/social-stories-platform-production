@@ -2,6 +2,8 @@ services:
   - type: web
     name: social-stories-scheduler
     env: node
+    plan: starter
+    region: frankfurt
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
@@ -9,8 +11,10 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: TZ
+        value: Asia/Riyadh
       - fromGroup: social-platform-secrets
-    healthCheckPath: /api/health
+    healthCheckPath: /api/admin/health
     autoDeploy: true
 
 envVarGroups:
@@ -22,6 +26,8 @@ envVarGroups:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+      - key: DEEPSEEK_API_KEY
+        sync: false
       - key: CLOUDFLARE_R2_ACCESS_KEY
         sync: false
       - key: CLOUDFLARE_R2_SECRET_KEY
@@ -29,4 +35,18 @@ envVarGroups:
       - key: CLOUDFLARE_R2_ENDPOINT
         sync: false
       - key: CLOUDFLARE_R2_BUCKET
+        sync: false
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+      - key: SESSION_SECRET
         sync: false
