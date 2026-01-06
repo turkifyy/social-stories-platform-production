@@ -1,0 +1,85 @@
+# ============================================================
+# Environment Variables Template for Production Deployment
+# Copy this content to your .env file on your server
+# ============================================================
+
+# =====================
+# Firebase Configuration (Required)
+# =====================
+VITE_FIREBASE_API_KEY=AIzaSyBBipgGaT3gAVa9Xd4mYcmteZRu3M5RtrM
+VITE_FIREBASE_AUTH_DOMAIN=studio-7770709444-57468.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=studio-7770709444-57468
+VITE_FIREBASE_STORAGE_BUCKET=studio-7770709444-57468.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=1068351165450
+VITE_FIREBASE_APP_ID=1:1068351165450:web:e06b73b035096f987afbf3
+
+# Firebase Admin (Optional - for server-side authentication)
+# FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"..."}
+
+# =====================
+# Database Configuration (Required)
+# =====================
+DATABASE_URL=postgresql://username:password@host:5432/database_name
+
+# =====================
+# Cloudflare R2 Storage (Required for media uploads)
+# =====================
+R2_ACCOUNT_ID=your_account_id
+R2_ACCESS_KEY_ID=your_access_key
+R2_SECRET_ACCESS_KEY=your_secret_key
+R2_BUCKET_NAME=your_bucket_name
+
+# =====================
+# AI Services (Required for content generation)
+# =====================
+DEEPSEEK_API_KEY=your_deepseek_api_key
+OPENAI_API_KEY=your_openai_api_key
+HUGGINGFACE_API_KEY=your_huggingface_api_key
+GEMINI_API_KEY=your_gemini_api_key
+
+# =====================
+# Social Media APIs (Required for automated posting)
+# =====================
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
+INSTAGRAM_APP_ID=your_instagram_app_id
+INSTAGRAM_APP_SECRET=your_instagram_app_secret
+TIKTOK_CLIENT_KEY=your_tiktok_client_key
+TIKTOK_CLIENT_SECRET=your_tiktok_client_secret
+
+# =====================
+# Media & Metadata APIs
+# =====================
+TMDB_API_KEY=your_tmdb_api_key
+GOOGLE_API_KEY=your_google_api_key
+GOOGLE_SEARCH_ENGINE_ID=your_search_engine_id
+YOUTUBE_API_KEY=your_youtube_api_key
+PEXELS_API_KEY=your_pexels_api_key
+RAPIDAPI_KEY=your_rapidapi_key
+
+# =====================
+# External Cron Job Secret
+# =====================
+CRON_SECRET_KEY=your_strong_cron_secret_here (Same as in GitHub Cron Job)
+
+# =====================
+# Server Configuration
+# =====================
+PORT=5000
+NODE_ENV=production
+PUBLIC_URL=https://your-domain.com
+
+# =====================
+# Session Configuration (Required)
+# =====================
+SESSION_SECRET=your_random_session_secret_here
+
+# ============================================================
+# Instructions:
+# ============================================================
+# 1. Create a file named ".env" in your project root
+# 2. Copy the content above into your .env file
+# 3. Replace placeholder values with your actual credentials
+# 4. Make sure .env is in your .gitignore file
+# 5. Run: npm install && npm run build && npm start
+# ============================================================
