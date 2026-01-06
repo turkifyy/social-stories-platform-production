@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: social-stories-scheduler
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - fromGroup: social-platform-secrets
+    healthCheckPath: /api/health
+    autoDeploy: true
+
+envVarGroups:
+  - name: social-platform-secrets
+    envVars:
+      - key: FIREBASE_SERVICE_ACCOUNT
+        sync: false
+      - key: CRON_SECRET_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: CLOUDFLARE_R2_ACCESS_KEY
+        sync: false
+      - key: CLOUDFLARE_R2_SECRET_KEY
+        sync: false
+      - key: CLOUDFLARE_R2_ENDPOINT
+        sync: false
+      - key: CLOUDFLARE_R2_BUCKET
+        sync: false
