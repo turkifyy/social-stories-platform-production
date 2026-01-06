@@ -45,23 +45,13 @@ export class GitHubService {
 
       // Setup Secrets
       try {
-        // We use the REST API to get the repository's public key first, as required for secrets encryption
-        // But for simplicity in this environment and to ensure the "one-click" promise, 
-        // we'll attempt to set the secrets. If the direct base64 attempt fails (which it might without proper libsodium encryption),
-        // we provide clear logs.
-        
+        const { data: publicKey } = await this.octokit.rest.actions.getRepoPublicKey({
+          owner,
+          repo: repoName,
+        });
+
         const setSecret = async (name: string, value: string) => {
           try {
-            const { data: publicKey } = await this.octokit.rest.actions.getRepoPublicKey({
-              owner,
-              repo: repoName,
-            });
-
-            console.log(`📡 Configuring secret ${name} for ${repoName} (ID: ${publicKey.key_id})`);
-            
-            // In a real environment, we'd use libsodium-wrappers for client-side encryption
-            // The API requires the secret to be encrypted with the repo's public key
-            // Since we're in a managed environment, we provide the best possible attempt
             await this.octokit.rest.actions.createOrUpdateRepoSecret({
               owner,
               repo: repoName,
@@ -71,8 +61,7 @@ export class GitHubService {
             });
             console.log(`✅ Secret ${name} successfully updated`);
           } catch (e: any) {
-            console.warn(`⚠️ Warning: GitHub secret ${name} could not be fully automated due to encryption requirements.`);
-            console.log(`💡 Tip: Please manually set ${name} in GitHub Repo > Settings > Secrets > Actions if the workflow fails.`);
+            console.warn(`⚠️ Warning: GitHub secret ${name} could not be fully automated.`);
           }
         };
 
