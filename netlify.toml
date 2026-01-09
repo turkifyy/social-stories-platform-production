@@ -5,6 +5,10 @@
 [build.environment]
   NODE_VERSION = "20"
 
+[functions]
+  directory = "netlify/functions"
+
+# SPA catch-all for client-side routing (functions with path config take precedence)
 [[redirects]]
   from = "/*"
   to = "/index.html"
