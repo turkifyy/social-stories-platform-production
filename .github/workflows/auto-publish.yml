@@ -1,0 +1,69 @@
+name: Auto-Publish Stories
+
+on:
+  schedule:
+    # Runs daily at 6:00 AM UTC (9:00 AM Saudi Arabia Time)
+    # Using UTC timezone for reliability
+    - cron: '0 6 * * *'
+  
+  # Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  auto-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Log workflow start
+        run: echo "🚀 Starting auto-publish workflow at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+      
+      - name: Trigger auto-publish on Replit
+        env:
+          # The base URL of your Replit app
+          # Example: https://story-scheduler.replit.dev
+          REPLIT_APP_URL: ${{ secrets.REPLIT_APP_URL }}
+          CRON_SECRET_KEY: ${{ secrets.CRON_SECRET_KEY }}
+        run: |
+          echo "🔄 Calling auto-publish endpoint..."
+          
+          if [ -z "$REPLIT_APP_URL" ]; then
+            echo "❌ Error: REPLIT_APP_URL secret is not set"
+            exit 1
+          fi
+          
+          if [ -z "$CRON_SECRET_KEY" ]; then
+            echo "❌ Error: CRON_SECRET_KEY secret is not set"
+            exit 1
+          fi
+          
+          # Call the webhook endpoint with authentication
+          RESPONSE=$(curl -s -X POST \
+            "$REPLIT_APP_URL/api/cron/trigger" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: $CRON_SECRET_KEY" \
+            -d '{"source": "github-actions"}' \
+            -w "\n%{http_code}")
+          
+          # Extract status code and body
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "📊 Response Status: $HTTP_CODE"
+          echo "📋 Response Body: $BODY"
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Auto-publish triggered successfully"
+            exit 0
+          else
+            echo "❌ Failed to trigger auto-publish (HTTP $HTTP_CODE)"
+            echo "Response: $BODY"
+            exit 1
+          fi
+      
+      - name: Log workflow completion
+        if: success()
+        run: echo "✨ Auto-publish workflow completed successfully at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+      
+      - name: Log workflow failure
+        if: failure()
+        run: echo "❌ Auto-publish workflow failed at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"

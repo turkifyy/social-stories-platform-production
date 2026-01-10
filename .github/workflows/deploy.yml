@@ -1,0 +1,31 @@
+name: Stories Scheduler Full Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '23'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Platform
+        run: npm run build
+
+      - name: Deployment Note
+        run: |
+          echo "Platform is built and ready."
+          echo "To auto-deploy to your host, you can add an FTP or SSH deploy step here."
