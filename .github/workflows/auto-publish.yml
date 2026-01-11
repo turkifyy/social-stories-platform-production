@@ -1,0 +1,48 @@
+name: Auto-Publish Stories
+
+on:
+  schedule:
+    # Runs daily at 6:00 AM UTC (9:00 AM Saudi Arabia Time)
+    - cron: '0 6 * * *'
+  
+  # Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  auto-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Log workflow start
+        run: echo "🚀 Starting auto-publish workflow at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+      
+      - name: Trigger auto-publish on Replit
+        env:
+          REPLIT_APP_URL: ${{ secrets.REPLIT_APP_URL }}
+          CRON_SECRET_KEY: ${{ secrets.CRON_SECRET_KEY }}
+        run: |
+          echo "🔄 Calling auto-publish endpoint..."
+          
+          if [ -z "$REPLIT_APP_URL" ]; then
+            echo "❌ Error: REPLIT_APP_URL secret is not set"
+            exit 1
+          fi
+          
+          # Call the webhook endpoint with authentication
+          RESPONSE=$(curl -s -X POST \
+            "$REPLIT_APP_URL/api/cron/trigger" \
+            -H "Content-Type: application/json" \
+            -H "x-cron-secret: $CRON_SECRET_KEY" \
+            -d '{"source": "github-actions", "action": "publish_daily_content"}' \
+            -w "\n%{http_code}")
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          
+          echo "📊 Response Status: $HTTP_CODE"
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Auto-publish triggered successfully"
+          else
+            echo "❌ Failed to trigger auto-publish (HTTP $HTTP_CODE)"
+            exit 1
+          fi

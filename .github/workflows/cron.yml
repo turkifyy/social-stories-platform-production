@@ -1,0 +1,36 @@
+name: Stories Scheduler Cron
+
+on:
+  schedule:
+    # Runs daily at 2:00 AM UTC (5:00 AM Saudi Arabia Time)
+    # This is 4 hours before the 9:00 AM Saudi publishing time
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Health Check System
+        run: |
+          echo "🔍 Checking system health before trigger..."
+          curl -s -I "${{ secrets.APP_URL }}/api/firebase-config" | grep -q "200 OK" || (echo "❌ System offline" && exit 1)
+      
+      - name: Trigger Daily Content Generation
+        id: trigger
+        run: |
+          echo "🚀 Triggering Daily Content Generation (4 hours before publishing)..."
+          RESPONSE=$(curl -s -D - -o response_body.json -X POST "${{ secrets.APP_URL }}/api/admin/cron/trigger" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET_KEY }}" \
+          -H "Content-Type: application/json" \
+          -d '{"action": "generate_daily_content"}')
+          
+          HTTP_CODE=$(echo "$RESPONSE" | grep HTTP | tail -n 1 | awk '{print $2}')
+          echo "📡 HTTP Response Code: $HTTP_CODE"
+          cat response_body.json
+          
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "❌ API Trigger failed with code $HTTP_CODE"
+            exit 1
+          fi
+          echo "✅ API Trigger successful"
